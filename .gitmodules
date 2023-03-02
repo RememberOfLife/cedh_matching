@@ -1,0 +1,3 @@
+[submodule "lib/rosalia"]
+	path = lib/rosalia
+	url = https://github.com/RememberOfLife/rosalia.git
