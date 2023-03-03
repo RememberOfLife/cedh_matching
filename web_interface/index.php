@@ -1,7 +1,3 @@
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,7 +10,7 @@ ini_set('display_errors', '1');
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     </head>
     <body id="page-container">
-        <div id="content-wrap" class="container-fluid mt-3">
+        <div id="content-wrap" class="container-fluid pt-3">
 
             <div class="row">
 
@@ -138,7 +134,10 @@ ini_set('display_errors', '1');
 
                 </div>
 
-                <!-- TODO navbar bottom with imprint and open source link -->
+                <footer class="d-flex flex-wrap justify-content-between align-items-center bg-light" id="footer">
+                    <a class=" d-inline" href="imprint.php">IMPRINT</a>
+                    <a class="float-end" href="https://github.com/RememberOfLife/cedh_matching">Open-Source</a>
+                </footer>
 
             </div>
 
