@@ -36,8 +36,10 @@ ini_set('display_errors', '1');
                             <tr>
                                 <th class="fit">#</th>
                                 <th>Name</th>
-                                <th>Score</th>
-                                <!-- tiebreaker stats e.g. opponent win percent -->
+                                <th class="fit">Score</th>
+                                <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Opponent Point Average:</b><br>Average score of all seen opponents. Opponents seen twice count twice.">OPA</th>
+                                <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>4 Table Win Percentage:</b><br>Percentage of all wins which were on 4 player tables.">4TW</th>
+                                <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Average Seating Disadvantage:</b><br>For all games.<br>First: 0%; Last: 100%<br>Rest: 50%">ASD</th>
                                 <th class="fit"></th>
                             </tr>
                         </thead>
@@ -46,6 +48,9 @@ ini_set('display_errors', '1');
                                 <th class="jsq_rank"></th>
                                 <td><span class="jsq_name"></span> <small class="text-muted">(<span class="jsq_id"></span>)</small></td>
                                 <td class="jsq_score"></td>
+                                <td><span class="jsq_tb_opa text-muted"></span></td>
+                                <td><span class="jsq_tb_4tw text-muted"></span></td>
+                                <td><span class="jsq_tb_asd text-muted"></span></td>
                                 <td><button type="button" class="jsq_btn btn btn-sm"></button></td>
                             </tr>
                         </tbody>
@@ -142,6 +147,13 @@ ini_set('display_errors', '1');
         <script src="index.js"></script>
         <!-- TODO make bootstrap static -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+        <script>
+            // bootstrap all tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        </script>
 
     </body>
 </html>

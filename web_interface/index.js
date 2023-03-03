@@ -45,7 +45,44 @@ function clear_error() {
 // container refresh and state update
 
 function refresh_players_container() {
+    let opp_score_avg_aarr = {};
+    let table_win_4p_aarr = {};
+    let table_seating_disadvantage_aarr = {};
+    for (let player of Object.values(state.players)) {
+
+        let opp_score_avg = 0;
+        if (player.tiebreaker.opp_ids.length > 0) {
+            for (let opp_id of player.tiebreaker.opp_ids) {
+                opp_score_avg += state.players[opp_id].score;
+            }
+            opp_score_avg = opp_score_avg / player.tiebreaker.opp_ids.length;
+            //TODO round as float..
+        }
+        opp_score_avg_aarr[player.id] = opp_score_avg;
+
+        let table_win_4p = 0;
+        if (player.tiebreaker.tw4p.length > 0) {
+            for (let tw4p of player.tiebreaker.tw4p) {
+                table_win_4p += tw4p;
+            }
+            table_win_4p = (table_win_4p / player.tiebreaker.tw4p.length) * 100;
+            //TODO round as float..
+        }
+        table_win_4p_aarr[player.id] = table_win_4p;
+
+        let table_seating_disadvantage = 0;
+        if (player.tiebreaker.tsd.length > 0) {
+            for (let tsd of player.tiebreaker.tsd) {
+                table_seating_disadvantage += tsd;
+            }
+            table_seating_disadvantage = (table_seating_disadvantage / player.tiebreaker.tsd.length) * 100;
+            //TODO round as float..
+        }
+        table_seating_disadvantage_aarr[player.id] = table_seating_disadvantage;
+    }
+
     let sort_players = Object.values(state.players);
+
     function compare_players_name(l,r) {
         if (l.name < r.name)
             return -1;
@@ -53,6 +90,35 @@ function refresh_players_container() {
             return 1;
         return 0;
     }
+    sort_players.sort(compare_players_name);
+
+    function compare_players_opa(l,r) {
+        if (opp_score_avg_aarr[l.id] < opp_score_avg_aarr[r.id])
+            return 1;
+        if (opp_score_avg_aarr[l.id] > opp_score_avg_aarr[r.id])
+            return -1;
+        return 0;
+    }
+    sort_players.sort(compare_players_opa);
+
+    function compare_players_4tw(l,r) {
+        if (table_win_4p_aarr[l.id] < table_win_4p_aarr[r.id])
+            return 1;
+        if (table_win_4p_aarr[l.id] > table_win_4p_aarr[r.id])
+            return -1;
+        return 0;
+    }
+    sort_players.sort(compare_players_4tw);
+
+    function compare_players_asd(l,r) {
+        if (table_seating_disadvantage_aarr[l.id] < table_seating_disadvantage_aarr[r.id])
+            return 1;
+        if (table_seating_disadvantage_aarr[l.id] > table_seating_disadvantage_aarr[r.id])
+            return -1;
+        return 0;
+    }
+    sort_players.sort(compare_players_asd);
+
     function compare_players_score(l,r) {
         if (l.score < r.score)
             return 1;
@@ -60,7 +126,6 @@ function refresh_players_container() {
             return -1;
         return 0;
     }
-    sort_players.sort(compare_players_name);
     sort_players.sort(compare_players_score);
 
     let players_container = document.getElementById("players_container");
@@ -74,11 +139,14 @@ function refresh_players_container() {
         new_player.classList.remove("d-none");
 
         //TODO somehow gray out inactive players
-        new_player.querySelector(".jsq_rank").innerText = i++; 
-        new_player.querySelector(".jsq_name").innerText = player.name; 
-        new_player.querySelector(".jsq_id").innerText = player.id; 
-        new_player.querySelector(".jsq_score").innerText = player.score; 
-        new_player.querySelector(".jsq_btn").dataset.id = player.id; 
+        new_player.querySelector(".jsq_rank").innerText = i++;
+        new_player.querySelector(".jsq_name").innerText = player.name;
+        new_player.querySelector(".jsq_id").innerText = player.id;
+        new_player.querySelector(".jsq_score").innerText = player.score;
+        new_player.querySelector(".jsq_tb_opa").innerText = opp_score_avg_aarr[player.id];
+        new_player.querySelector(".jsq_tb_4tw").innerText = table_win_4p_aarr[player.id] + "%";
+        new_player.querySelector(".jsq_tb_asd").innerText = table_seating_disadvantage_aarr[player.id] + "%";
+        new_player.querySelector(".jsq_btn").dataset.id = player.id;
         new_player.querySelector(".jsq_btn").onclick = player.active ? remove_player : activate_player;
         new_player.querySelector(".jsq_btn").innerText = player.active ? "X" : "+";
         new_player.querySelector(".jsq_btn").classList.add(player.active ? "btn-outline-danger" : "btn-outline-success");
@@ -101,8 +169,8 @@ function refresh_tables_container() {
         if (table.winner == 0) {
             new_table.querySelector(".jsq_table").classList.add("table-secondary");
         }
-        new_table.querySelector(".jsq_table_num").innerText = i+1; 
-        new_table.querySelector(".jsq_btn_draw").dataset.id = i; 
+        new_table.querySelector(".jsq_table_num").innerText = i+1;
+        new_table.querySelector(".jsq_btn_draw").dataset.id = i;
         new_table.querySelector(".jsq_btn_draw").onclick = table_draw;
         new_table.querySelector(".jsq_btn_draw").classList.add(table.winner == 0 ? "btn-dark" : "btn-outline-dark");
         if (table.winner == 0) {
@@ -172,6 +240,10 @@ function add_player() {
     new_player.id = state.next_id++;
     new_player.name = new_name;
     new_player.score = Number(0);
+    new_player.tiebreaker = {};
+    new_player.tiebreaker.opp_ids = []; // opponent ids over all tables
+    new_player.tiebreaker.tw4p = []; // for all wins: 1 for 4 tables, 0 for 3 tables
+    new_player.tiebreaker.tsd = []; // for every table, the experienced seating disadvantage
     new_player.active = true;
     state.players[new_player.id] = new_player;
     update_state();
@@ -193,7 +265,7 @@ function activate_player(e) {
 
 function remove_player(e) {
     let pid = e.target.dataset.id;
-    if (state.players[pid].score > 0) {
+    if (state.rounds.length > 0 || loading || state.placements.length > 0) {
         state.players[pid].active = false;
     } else {
         delete state.players[pid];
@@ -238,13 +310,28 @@ document.getElementById("generate_placements").onclick = generate_placements;
 
 function confirm_results() {
     for (let table of state.placements) {
-        if (table.winner == 0) {
-            for (let player of table.players) {
+        if (table.winner != 0) {
+            state.players[table.winner].score += 3;
+            state.players[table.winner].tiebreaker.tw4p.push(table.players.length == 4 ? 1 : 0);
+        }
+        for (let player of table.players) {
+            if (table.winner == 0) {
                 state.players[player].score += 1;
             }
-        } else {
-            state.players[table.winner].score += 3;
+            if (player == table.players[0]) {
+                state.players[player].tiebreaker.tsd.push(1.0);
+            } else if (player == table.players[table.players.length - 1]) {
+                state.players[player].tiebreaker.tsd.push(0.0);
+            } else {
+                state.players[player].tiebreaker.tsd.push(0.5);
+            }
+            for (let opp of table.players) {
+                if (player != opp) {
+                    state.players[player].tiebreaker.opp_ids.push(opp);
+                }
+            }
         }
+
     }
     state.rounds.push(state.placements);
     state.placements = [];
