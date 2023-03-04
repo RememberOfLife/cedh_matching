@@ -3,7 +3,7 @@
 This project provides a random searching cEDH tournament matchmaker, and a general purpose web interface for all matchmakers adhering to the common protocol defined in this project.
 
 ## cedh tournament placement protocol
-The matchmaker invoked by the web interface needs to support the folling protocol:
+The matchmaker invoked by the web interface needs to support the following protocol:
 * Read from stdin the input format.
 * Write to stdout the output format, and only that.
 

@@ -56,9 +56,8 @@ function refresh_players_container() {
                 opp_score_avg += state.players[opp_id].score;
             }
             opp_score_avg = opp_score_avg / player.tiebreaker.opp_ids.length;
-            //TODO round as float..
         }
-        opp_score_avg_aarr[player.id] = opp_score_avg;
+        opp_score_avg_aarr[player.id] = (opp_score_avg).toFixed(2);
 
         let table_win_4p = 0;
         if (player.tiebreaker.tw4p.length > 0) {
@@ -68,7 +67,7 @@ function refresh_players_container() {
             table_win_4p = (table_win_4p / player.tiebreaker.tw4p.length) * 100;
             //TODO round as float..
         }
-        table_win_4p_aarr[player.id] = table_win_4p;
+        table_win_4p_aarr[player.id] = (table_win_4p).toFixed(2);
 
         let table_seating_disadvantage = 0;
         if (player.tiebreaker.tsd.length > 0) {
@@ -78,7 +77,7 @@ function refresh_players_container() {
             table_seating_disadvantage = (table_seating_disadvantage / player.tiebreaker.tsd.length) * 100;
             //TODO round as float..
         }
-        table_seating_disadvantage_aarr[player.id] = table_seating_disadvantage;
+        table_seating_disadvantage_aarr[player.id] = (table_seating_disadvantage).toFixed(2);
     }
 
     let sort_players = Object.values(state.players);
@@ -92,14 +91,14 @@ function refresh_players_container() {
     }
     sort_players.sort(compare_players_name);
 
-    function compare_players_opa(l,r) {
-        if (opp_score_avg_aarr[l.id] < opp_score_avg_aarr[r.id])
+    function compare_players_asd(l,r) {
+        if (table_seating_disadvantage_aarr[l.id] < table_seating_disadvantage_aarr[r.id])
             return 1;
-        if (opp_score_avg_aarr[l.id] > opp_score_avg_aarr[r.id])
+        if (table_seating_disadvantage_aarr[l.id] > table_seating_disadvantage_aarr[r.id])
             return -1;
         return 0;
     }
-    sort_players.sort(compare_players_opa);
+    sort_players.sort(compare_players_asd);
 
     function compare_players_4tw(l,r) {
         if (table_win_4p_aarr[l.id] < table_win_4p_aarr[r.id])
@@ -110,14 +109,14 @@ function refresh_players_container() {
     }
     sort_players.sort(compare_players_4tw);
 
-    function compare_players_asd(l,r) {
-        if (table_seating_disadvantage_aarr[l.id] < table_seating_disadvantage_aarr[r.id])
+    function compare_players_opa(l,r) {
+        if (opp_score_avg_aarr[l.id] < opp_score_avg_aarr[r.id])
             return 1;
-        if (table_seating_disadvantage_aarr[l.id] > table_seating_disadvantage_aarr[r.id])
+        if (opp_score_avg_aarr[l.id] > opp_score_avg_aarr[r.id])
             return -1;
         return 0;
     }
-    sort_players.sort(compare_players_asd);
+    sort_players.sort(compare_players_opa);
 
     function compare_players_score(l,r) {
         if (l.score < r.score)
@@ -186,6 +185,11 @@ function refresh_tables_container() {
                 new_player_line.classList.add("table-success");
             }
             new_player_line.querySelector(".jsq_name").innerText = state.players[player].name;
+            if (state.players[player].is_dupe) {
+                new_player_line.querySelector(".jsq_id").innerText = state.players[player].id;
+            } else {
+                new_player_line.querySelector(".jsq_id").parentElement.classList.add("d-none");
+            }
             new_player_line.querySelector(".jsq_btn_v").dataset.tid = i;
             new_player_line.querySelector(".jsq_btn_v").dataset.pid = player;
             new_player_line.querySelector(".jsq_btn_v").onclick = table_win;
@@ -235,10 +239,18 @@ function add_player() {
     if (new_name == "") {
         return;
     }
-    //TODO make sure this is not a dupe player
+    let is_dupe = false;
+    for (let player of Object.values(state.players)) {
+        if (new_name == player.name) {
+            is_dupe = true;
+            state.players[player.id].is_dupe = true;
+            break;
+        }
+    }
     let new_player = {};
     new_player.id = state.next_id++;
     new_player.name = new_name;
+    new_player.is_dupe = is_dupe;
     new_player.score = Number(0);
     new_player.tiebreaker = {};
     new_player.tiebreaker.opp_ids = []; // opponent ids over all tables
@@ -265,7 +277,7 @@ function activate_player(e) {
 
 function remove_player(e) {
     let pid = e.target.dataset.id;
-    if (state.rounds.length > 0 || loading || state.placements.length > 0) {
+    if (state.rounds.length > 0 || request_pending || state.placements.length > 0) {
         state.players[pid].active = false;
     } else {
         delete state.players[pid];
