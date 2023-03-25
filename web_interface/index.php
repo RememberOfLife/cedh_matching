@@ -138,7 +138,7 @@
 
                 <footer class="d-flex flex-wrap justify-content-between align-items-center bg-light" id="footer">
                     <a class="d-inline" href="imprint.php">IMPRINT</a>
-                    <span class="text-muted">v0.6.0</span>
+                    <span class="text-muted">v0.7.0</span>
                     <a class="float-end" href="https://github.com/RememberOfLife/cedh_matching">Open-Source</a>
                 </footer>
 

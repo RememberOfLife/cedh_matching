@@ -3,23 +3,21 @@
 // ini_set('display_errors', '1');
 
 header('Content-type: application/json');
+http_response_code(200);
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-    http_response_code(400);
-    echo('{"error":"not a post request"}');
+    $output = json_encode(array("error" => "not a post request"));
     exit();
 }
 
 $request_raw = file_get_contents('php://input');
 if ($request_raw == "") {
-    http_response_code(400);
-    echo('{"error":"request body missing"}');
+    $output = json_encode(array("error" => "request body missing"));
     exit();
 }
 $input = json_decode($request_raw);
 if ($input == NULL) {
-    http_response_code(400);
-    echo('{"error":"json decode fail"}');
+    $output = json_encode(array("error" => "json decode fail"));
     exit();
 }
 
@@ -31,7 +29,8 @@ $descriptorspec = array(
 );
 // calling script with timeout
 $timeout = 5;
-$process = proc_open("timeout $timeout ./cedh_matching --timeout 2000", $descriptorspec, $pipes);
+// $process = proc_open("timeout $timeout ./cedh_matching --timeout 2000", $descriptorspec, $pipes);
+$process = proc_open("timeout $timeout ./matching_adapter.sh", $descriptorspec, $pipes);
 
 $output = "";
 if (is_resource($process)) {
@@ -48,9 +47,9 @@ if (is_resource($process)) {
     }
     if ($error_out != "") {
         $error_out = str_replace("\n", "\\n", $error_out);
-        $output = '{"error":"' . addslashes($error_out) . '"}';
+        $output = json_encode(array("error" => $error_out));
     }
-    
+
     if ($error_out == "") {
         while (!feof($pipes[1])) {
             $output_line = fgets($pipes[1]);
@@ -61,8 +60,7 @@ if (is_resource($process)) {
         }
     }
 } else {
-    http_response_code(400);
-    $output = '{"error":"could not open resource"}';
+    $output = json_encode(array("error" => "could not open resource"));
 }
 
 proc_close($process);
