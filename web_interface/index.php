@@ -33,9 +33,9 @@
                                 <th class="fit">#</th>
                                 <th>Name</th>
                                 <th class="fit" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Score:</b><br>Win: 3 Points<br>Draw: 1 Point<br>Loss: 0 Points">Score</th>
-                                <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Opponent Point Average:</b><br>Average score of all seen opponents. Opponents seen twice count twice.">OPA</th>
-                                <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>4 Table Win Percentage:</b><br>Percentage of all wins which were on 4 player tables.">4TW</th>
-                                <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Average Seating Disadvantage:</b><br>For all games.<br>First: 0%; Last: 100%<br>Rest: 50%">ASD</th>
+                                <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Opponent Match Win Percentage:</b><br>Average win percentage of all seen opponents.<br>Opponents seen twice count twice.">OMW&#37;</th>
+                                <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Total Seating Number:</b><br>Sum of all seating positions.<br>First = 1; Last = 3|4">TSN</th>
+                                <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>4 Table Win Percentage:</b><br>Percentage of all wins which were on 4 player tables.">4TW&#37;</th>
                                 <th class="fit"></th>
                             </tr>
                         </thead>
@@ -44,9 +44,9 @@
                                 <th class="jsq_rank"></th>
                                 <td><span class="jsq_name"></span> <small class="text-muted">(<span class="jsq_id"></span>)</small></td>
                                 <td class="jsq_score"></td>
-                                <td><span class="jsq_tb_opa text-muted"></span></td>
+                                <td><span class="jsq_tb_owp text-muted"></span></td>
+                                <td><span class="jsq_tb_tsn text-muted"></span></td>
                                 <td><span class="jsq_tb_4tw text-muted"></span></td>
-                                <td><span class="jsq_tb_asd text-muted"></span></td>
                                 <td><button type="button" class="jsq_btn btn btn-sm"></button></td>
                             </tr>
                         </tbody>
@@ -108,7 +108,7 @@
                                         </thead>
                                         <tbody class="table-group-divider jsq_table_body">
                                             <tr class="jsq_template_name_entry d-none">
-                                                <td><span class="jsq_name"></span></td>
+                                                <td><span class="jsq_name"></span> <small class="text-muted">(<span class="jsq_id"></span>)</small></td>
                                                 <td><button type="button" class="btn btn-sm jsq_btn_v">V</button></td>
                                             </tr>
                                         </tbody>
@@ -138,7 +138,7 @@
 
                 <footer class="d-flex flex-wrap justify-content-between align-items-center bg-light" id="footer">
                     <a class="d-inline" href="imprint.php">IMPRINT</a>
-                    <span class="text-muted">v0.5.0</span>
+                    <span class="text-muted">v0.6.0</span>
                     <a class="float-end" href="https://github.com/RememberOfLife/cedh_matching">Open-Source</a>
                 </footer>
 

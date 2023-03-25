@@ -45,19 +45,23 @@ function clear_error() {
 // container refresh and state update
 
 function refresh_players_container() {
-    let opp_score_avg_aarr = {};
+    let opp_win_percentage_aarr = {};
     let table_win_4p_aarr = {};
-    let table_seating_disadvantage_aarr = {};
+    let total_seating_number_aarr = {};
     for (let player of Object.values(state.players)) {
 
-        let opp_score_avg = 0;
+        let opp_win_percentage = 0;
         if (player.tiebreaker.opp_ids.length > 0) {
             for (let opp_id of player.tiebreaker.opp_ids) {
-                opp_score_avg += state.players[opp_id].score;
+                let owp = state.players[opp_id].wins / state.players[opp_id].game_count;
+                if (owp < 0.33) {
+                    owp = 0.33;
+                }
+                opp_win_percentage += owp;
             }
-            opp_score_avg = opp_score_avg / player.tiebreaker.opp_ids.length;
+            opp_win_percentage = opp_win_percentage / player.tiebreaker.opp_ids.length;
         }
-        opp_score_avg_aarr[player.id] = (opp_score_avg).toFixed(2);
+        opp_win_percentage_aarr[player.id] = (opp_win_percentage).toFixed(2);
 
         let table_win_4p = 0;
         if (player.tiebreaker.tw4p.length > 0) {
@@ -65,19 +69,16 @@ function refresh_players_container() {
                 table_win_4p += tw4p;
             }
             table_win_4p = (table_win_4p / player.tiebreaker.tw4p.length) * 100;
-            //TODO round as float..
         }
         table_win_4p_aarr[player.id] = (table_win_4p).toFixed(2);
 
-        let table_seating_disadvantage = 0;
-        if (player.tiebreaker.tsd.length > 0) {
-            for (let tsd of player.tiebreaker.tsd) {
-                table_seating_disadvantage += tsd;
+        let total_seating_number = 0;
+        if (player.tiebreaker.tsn.length > 0) {
+            for (let tsn of player.tiebreaker.tsn) {
+                total_seating_number += tsn;
             }
-            table_seating_disadvantage = (table_seating_disadvantage / player.tiebreaker.tsd.length) * 100;
-            //TODO round as float..
         }
-        table_seating_disadvantage_aarr[player.id] = (table_seating_disadvantage).toFixed(2);
+        total_seating_number_aarr[player.id] = total_seating_number;
     }
 
     let sort_players = Object.values(state.players);
@@ -91,15 +92,6 @@ function refresh_players_container() {
     }
     sort_players.sort(compare_players_name);
 
-    function compare_players_asd(l,r) {
-        if (table_seating_disadvantage_aarr[l.id] < table_seating_disadvantage_aarr[r.id])
-            return 1;
-        if (table_seating_disadvantage_aarr[l.id] > table_seating_disadvantage_aarr[r.id])
-            return -1;
-        return 0;
-    }
-    sort_players.sort(compare_players_asd);
-
     function compare_players_4tw(l,r) {
         if (table_win_4p_aarr[l.id] < table_win_4p_aarr[r.id])
             return 1;
@@ -109,10 +101,19 @@ function refresh_players_container() {
     }
     sort_players.sort(compare_players_4tw);
 
-    function compare_players_opa(l,r) {
-        if (opp_score_avg_aarr[l.id] < opp_score_avg_aarr[r.id])
+    function compare_players_tsn(l,r) {
+        if (total_seating_number_aarr[l.id] < total_seating_number_aarr[r.id])
             return 1;
-        if (opp_score_avg_aarr[l.id] > opp_score_avg_aarr[r.id])
+        if (total_seating_number_aarr[l.id] > total_seating_number_aarr[r.id])
+            return -1;
+        return 0;
+    }
+    sort_players.sort(compare_players_tsn);
+
+    function compare_players_opa(l,r) {
+        if (opp_win_percentage_aarr[l.id] < opp_win_percentage_aarr[r.id])
+            return 1;
+        if (opp_win_percentage_aarr[l.id] > opp_win_percentage_aarr[r.id])
             return -1;
         return 0;
     }
@@ -141,10 +142,11 @@ function refresh_players_container() {
         new_player.querySelector(".jsq_rank").innerText = i++;
         new_player.querySelector(".jsq_name").innerText = player.name;
         new_player.querySelector(".jsq_id").innerText = player.id;
+        new_player.querySelector(".jsq_id").parentElement.classList.add("d-none"); //TODO switch for debug mode
         new_player.querySelector(".jsq_score").innerText = player.score;
-        new_player.querySelector(".jsq_tb_opa").innerText = opp_score_avg_aarr[player.id];
-        new_player.querySelector(".jsq_tb_4tw").innerText = table_win_4p_aarr[player.id] + "%";
-        new_player.querySelector(".jsq_tb_asd").innerText = table_seating_disadvantage_aarr[player.id] + "%";
+        new_player.querySelector(".jsq_tb_owp").innerText = opp_win_percentage_aarr[player.id];
+        new_player.querySelector(".jsq_tb_tsn").innerText = total_seating_number_aarr[player.id];
+        new_player.querySelector(".jsq_tb_4tw").innerText = table_win_4p_aarr[player.id];
         new_player.querySelector(".jsq_btn").dataset.id = player.id;
         new_player.querySelector(".jsq_btn").onclick = player.active ? remove_player : activate_player;
         new_player.querySelector(".jsq_btn").innerText = player.active ? "X" : "+";
@@ -185,6 +187,8 @@ function refresh_tables_container() {
                 new_player_line.classList.add("table-success");
             }
             new_player_line.querySelector(".jsq_name").innerText = state.players[player].name;
+            new_player_line.querySelector(".jsq_id").innerText = state.players[player].id;
+            new_player_line.querySelector(".jsq_id").parentElement.classList.add("d-none"); //TODO switch for debug mode
             new_player_line.querySelector(".jsq_btn_v").dataset.tid = i;
             new_player_line.querySelector(".jsq_btn_v").dataset.pid = player;
             new_player_line.querySelector(".jsq_btn_v").onclick = table_win;
@@ -250,10 +254,12 @@ function add_player() {
     new_player.id = state.next_id++;
     new_player.name = new_name;
     new_player.score = Number(0);
+    new_player.wins = Number(0);
+    new_player.game_count = Number(0);
     new_player.tiebreaker = {};
     new_player.tiebreaker.opp_ids = []; // opponent ids over all tables
     new_player.tiebreaker.tw4p = []; // for all wins: 1 for 4 tables, 0 for 3 tables
-    new_player.tiebreaker.tsd = []; // for every table, the experienced seating disadvantage
+    new_player.tiebreaker.tsn = []; // for every table, the experienced total seating number
     new_player.active = true;
     state.players[new_player.id] = new_player;
     update_state();
@@ -326,24 +332,22 @@ function confirm_results() {
     for (let table of state.placements) {
         if (table.winner != 0) {
             state.players[table.winner].score += 3;
+            state.players[table.winner].wins += 1;
             state.players[table.winner].tiebreaker.tw4p.push(table.players.length == 4 ? 1 : 0);
         }
+        let seating_number = 1;
         for (let player of table.players) {
+            state.players[player].game_count += 1;
             if (table.winner == 0) {
                 state.players[player].score += 1;
             }
-            if (player == table.players[0]) {
-                state.players[player].tiebreaker.tsd.push(1.0);
-            } else if (player == table.players[table.players.length - 1]) {
-                state.players[player].tiebreaker.tsd.push(0.0);
-            } else {
-                state.players[player].tiebreaker.tsd.push(0.5);
-            }
+            state.players[player].tiebreaker.tsn.push(seating_number);
             for (let opp of table.players) {
                 if (player != opp) {
                     state.players[player].tiebreaker.opp_ids.push(opp);
                 }
             }
+            seating_number++;
         }
 
     }
