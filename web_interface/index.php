@@ -32,7 +32,7 @@
                             <tr>
                                 <th class="fit">#</th>
                                 <th>Name</th>
-                                <th class="fit" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Score:</b><br>3 Points for Win.<br>1 Point for all table players on a draw.<br>0 Points for a loss.">Score</th>
+                                <th class="fit" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Score:</b><br>Win: 3 Points<br>Draw: 1 Point<br>Loss: 0 Points">Score</th>
                                 <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Opponent Point Average:</b><br>Average score of all seen opponents. Opponents seen twice count twice.">OPA</th>
                                 <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>4 Table Win Percentage:</b><br>Percentage of all wins which were on 4 player tables.">4TW</th>
                                 <th class="fit text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="<b>Average Seating Disadvantage:</b><br>For all games.<br>First: 0%; Last: 100%<br>Rest: 50%">ASD</th>
@@ -92,6 +92,8 @@
 
                     <hr>
 
+                    <h5 class="mb-3 d-flex justify-content-center">Round #<span id="round_number"></span></h5>
+
                     <div class="row" id="tables_container">
 
                         <div class="col-sm-6 mb-4 d-none" id="template_table">
@@ -106,7 +108,7 @@
                                         </thead>
                                         <tbody class="table-group-divider jsq_table_body">
                                             <tr class="jsq_template_name_entry d-none">
-                                                <td><span class="jsq_name"></span> <small class="text-muted">(<span class="jsq_id"></span>)</small></td>
+                                                <td><span class="jsq_name"></span></td>
                                                 <td><button type="button" class="btn btn-sm jsq_btn_v">V</button></td>
                                             </tr>
                                         </tbody>
@@ -136,7 +138,7 @@
 
                 <footer class="d-flex flex-wrap justify-content-between align-items-center bg-light" id="footer">
                     <a class="d-inline" href="imprint.php">IMPRINT</a>
-                    <span class="text-muted">v0.4.0</span>
+                    <span class="text-muted">v0.5.0</span>
                     <a class="float-end" href="https://github.com/RememberOfLife/cedh_matching">Open-Source</a>
                 </footer>
 

@@ -185,11 +185,6 @@ function refresh_tables_container() {
                 new_player_line.classList.add("table-success");
             }
             new_player_line.querySelector(".jsq_name").innerText = state.players[player].name;
-            if (state.players[player].is_dupe) {
-                new_player_line.querySelector(".jsq_id").innerText = state.players[player].id;
-            } else {
-                new_player_line.querySelector(".jsq_id").parentElement.classList.add("d-none");
-            }
             new_player_line.querySelector(".jsq_btn_v").dataset.tid = i;
             new_player_line.querySelector(".jsq_btn_v").dataset.pid = player;
             new_player_line.querySelector(".jsq_btn_v").onclick = table_win;
@@ -233,8 +228,9 @@ function set_primary_button(val) {
 // button triggers
 
 function add_player() {
+    clear_error();
     let in_player_name = document.getElementById("in_player_name");
-    let new_name = in_player_name.value;
+    let new_name = in_player_name.value.trim();
     in_player_name.value = "";
     if (new_name == "") {
         return;
@@ -243,14 +239,16 @@ function add_player() {
     for (let player of Object.values(state.players)) {
         if (new_name == player.name) {
             is_dupe = true;
-            state.players[player.id].is_dupe = true;
             break;
         }
+    }
+    if (is_dupe) {
+        show_error("duplicate player name, ignored");
+        return;
     }
     let new_player = {};
     new_player.id = state.next_id++;
     new_player.name = new_name;
-    new_player.is_dupe = is_dupe;
     new_player.score = Number(0);
     new_player.tiebreaker = {};
     new_player.tiebreaker.opp_ids = []; // opponent ids over all tables
@@ -270,12 +268,14 @@ function form_add_player_submit(e) {
 document.getElementById("form_add_player").addEventListener("submit", form_add_player_submit);
 
 function activate_player(e) {
+    clear_error();
     let pid = e.target.dataset.id;
     state.players[pid].active = true;
     update_state();
 };
 
 function remove_player(e) {
+    clear_error();
     let pid = e.target.dataset.id;
     if (state.rounds.length > 0 || request_pending || state.placements.length > 0) {
         state.players[pid].active = false;
@@ -286,6 +286,7 @@ function remove_player(e) {
 };
 
 function generate_placements() {
+    clear_error();
     let player_ids = [];
     for (let player of Object.values(state.players)) {
         if (player.active) {
@@ -321,6 +322,7 @@ function generate_placements() {
 document.getElementById("generate_placements").onclick = generate_placements;
 
 function confirm_results() {
+    clear_error();
     for (let table of state.placements) {
         if (table.winner != 0) {
             state.players[table.winner].score += 3;
@@ -352,12 +354,14 @@ function confirm_results() {
 document.getElementById("confirm_results").onclick = confirm_results;
 
 function table_draw(e) {
+    clear_error();
     let tid = e.target.dataset.id;
     state.placements[tid].winner = Number(0);
     update_state();
 };
 
 function table_win(e) {
+    clear_error();
     let tid = e.target.dataset.tid;
     let pid = e.target.dataset.pid;
     state.placements[tid].winner = Number(pid);
@@ -365,12 +369,14 @@ function table_win(e) {
 };
 
 function remove_reset() {
+    clear_error();
     localStorage.removeItem("state");
     load_state();
 };
 document.getElementById("delete_reset").onclick = remove_reset;
 
 function reset_placements() {
+    clear_error();
     state.placements = [];
     update_state();
 };
@@ -465,6 +471,8 @@ function update_state() {
     // refresh containers
     refresh_players_container();
     refresh_tables_container();
+    // show the current round number
+    document.getElementById("round_number").innerText = state.rounds.length + 1;
     // set sync
     sync();
 };

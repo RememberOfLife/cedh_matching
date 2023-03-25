@@ -55,7 +55,3 @@ The output is a serialized json object:
 }
 ```
 `placements` is a list of tables, where each table has `players`. Only 3 or 4 player tables are allowed.
-
-### note
-The build for the matchmaker is broken right now because of an issue in the rosalia dep. (Will be fixed soon.)
-
